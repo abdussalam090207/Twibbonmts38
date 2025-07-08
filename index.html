@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATSAMA 38 Jakarta - Twibbon Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* === LOADING SCREEN === */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a192f, #0c2d48, #0a192f);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) linear infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .loading-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .loading-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #64ffda;
+            text-shadow: 0 0 15px rgba(100, 255, 218, 0.7);
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #64ffda;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .progress-container {
+            width: 80%;
+            max-width: 500px;
+            height: 12px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #64ffda, #00aaff);
+            border-radius: 10px;
+            animation: progress 3s forwards;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .loading-subtext {
+            margin-top: 30px;
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            display: none;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0a192f;
+            /* Dark blue background */
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Star background for main content */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star-bg {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation:
+                twinkle var(--duration) linear infinite,
+                moveStars var(--move-duration) linear infinite;
+        }
+
+        /* Animasi baru untuk pergerakan bintang */
+        @keyframes moveStars {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #64ffda, #00aaff);
+            /* Green to blue gradient */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.1);
+            position: relative;
+        }
+
+        header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #64ffda, #00aaff);
+            /* Green to blue gradient */
+            border-radius: 2px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 20px auto;
+            color: #8892b0;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-section,
+        .preview-section {
+            background: rgba(10, 25, 47, 0.8);
+            /* Dark blue with transparency */
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            /* Green border */
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #64ffda;
+            /* Green accent color */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #00aaff;
+            /* Blue accent color */
+        }
+
+        .upload-area {
+            border: 3px dashed #64ffda;
+            /* Green accent color */
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(100, 255, 218, 0.05);
+            /* Light green background */
+        }
+
+        .upload-area:hover {
+            background: rgba(100, 255, 218, 0.1);
+            border-color: #00aaff;
+            /* Blue accent color */
+        }
+
+        .upload-area i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #00aaff;
+            /* Blue accent color */
+        }
+
+        .upload-area h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #64ffda;
+            /* Green accent color */
+        }
+
+        .upload-area p {
+            color: #8892b0;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(90deg, #64ffda, #00aaff);
+            /* Green to blue gradient */
+            color: #0a192f;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
+            font-weight: bold;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(100, 255, 218, 0.6);
+        }
+
+        .preview-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 15px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .frame-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .twibbon-frame {
+            position: absolute;
+            max-width: 90%;
+            max-height: 90%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .user-image {
+            position: absolute;
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: cover;
+            z-index: 1;
+            cursor: move;
+        }
+
+        .controls {
+            margin-top: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8892b0;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 10px;
+            background: rgba(100, 255, 218, 0.2);
+            border-radius: 5px;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #64ffda;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.8);
+            border: 2px solid #0a192f;
+        }
+
+        .slider-value {
+            width: 50px;
+            text-align: center;
+            background: rgba(100, 255, 218, 0.1);
+            padding: 5px;
+            border-radius: 5px;
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn {
+            background: linear-gradient(90deg, #64ffda, #00aaff);
+            color: #0a192f;
+        }
+
+        .reset-btn {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .frame-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .frame-option {
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .frame-option:hover {
+            transform: scale(1.05);
+            border-color: #64ffda;
+        }
+
+        .frame-option.active {
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+        }
+
+        .frame-option img {
+            width: 100%;
+            display: block;
+        }
+
+        .peringata {
+            background: rgba(100, 255, 218, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            color: #8892b0;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .peringata p {
+            margin: 0;
+            flex: 1;
+        }
+
+        .peringata svg {
+            margin-right: 10px;
+            color: #ff416c;
+            min-width: 30px;
+        }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            margin-top: 50px;
+            position: relative;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(10, 25, 47, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #64ffda, #00aaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 15px;
+            text-align: left;
+        }
+
+        .footer-section h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-section h3 i {
+            color: #00aaff;
+        }
+
+        .footer-section p {
+            color: #8892b0;
+            line-height: 1.8;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #8892b0;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-section ul li a:hover {
+            color: #64ffda;
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+            color: #8892b0;
+            font-size: 0.9rem;
+        }
+
+        .copyright a {
+            color: #64ffda;
+            text-decoration: none;
+        }
+
+        /* Kontak Button */
+        .kontak {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            z-index: 1;
+        }
+
+        .kontak button {
+            background: linear-gradient(90deg, #64ffda, #00aaff);
+            color: #0a192f;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(100, 255, 218, 0.4);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .kontak button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(100, 255, 218, 0.6);
+        }
+
+        .kontak i {
+            margin-right: 10px;
+        }
+
+        .kontak a {
+            text-decoration: none;
+            color: #0a192f;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            .app-container {
+                gap: 20px;
+            }
+
+            .upload-section,
+            .preview-section {
+                padding: 20px;
+            }
+
+            .footer-info {
+                flex-direction: column;
+            }
+
+            .footer-section {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="stars" id="stars-container"></div>
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-stars"></i>
+            </div>
+            <h1 class="loading-text">Selamat Berseluncur <h1>
+                    <div class="progress-container">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <p class="loading-subtext">Membangun pngalaman yang tertidur dalam kegelapan...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="stars-bg" id="stars-bg-container"></div>
+
+        <div class="container">
+            <header>
+                <h1 class="neon-text">BUAT TWIBBONMU DISINI</h1>
+                <p>Buat twibbon MATSAMA dengan foto Anda. Unggah foto, atur ukuran dan posisi, lalu unduh hasilnya!</p>
+            </header>
+
+            <div class="app-container">
+                <div class="upload-section">
+                    <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Unggah Foto</h2>
+
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-images"></i>
+                        <h3>Seret & Lepaskan Foto Anda</h3>
+                        <p>Atau klik untuk memilih file (JPG, PNG, max 5MB)</p>
+                        <button class="upload-btn pulse">
+                            <i class="fas fa-folder-open"></i> Pilih Foto
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div class="frame-selector">
+                        <h2 class="section-title" style="grid-column: span 3; margin-top: 30px;">
+                            <i class="fas fa-border-style"></i> Template Twibbon
+                        </h2>
+                        <div class="frame-option active">
+                            <img src="https://raw.githubusercontent.com/abdussalam090207/Twibbonmts38/refs/heads/main/Oranye%20dan%20Kuning%20Abstrak%20Modern%20Twibbon%20PKKMB%20Konten%20Instagram%20(2).png"
+                                alt="Template Kustom">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h2 class="section-title"><i class="fas fa-eye"></i> Lihat Twibbonmu</h2>
+
+                    <div class="preview-container">
+                        <div class="frame-container">
+                            <img id="userImage" class="user-image" style="display: none;">
+                            <img id="twibbonFrame" class="twibbon-frame"
+                                src="https://raw.githubusercontent.com/abdussalam090207/Twibbonmts38/refs/heads/main/Oranye%20dan%20Kuning%20Abstrak%20Modern%20Twibbon%20PKKMB%20Konten%20Instagram%20(2).png"
+                                alt="Twibbon Frame">
+                            <div class="drag-hint">Geser foto untuk menyesuaikan posisi</div>
+                        </div>
+                    </div>
+                    <style>
+                        .drag-hint{
+                            margin-top: 20rem;
+                            z-index: 10;
+                            color: #ff7b00;
+                            font-weight: bold;
+                            box-shadow: #ff7b00;
+                        }
+                    </style>
+
+                    <div class="peringata">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p>Pastikan foto yang diunggah memiliki kualitas baik dan sesuai dengan template twibbon.
+                            Dalam pengunduhan tunggu max 30 detik (Internet Lancar) karena file berukuran - 10 MB.
+                            <br>Web ini Aman karena tidak menggunakan penyimpanan server dan ini masih Beta "Selamat
+                            Mencoba..."
+                        </p>
+                    </div>
+
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="sizeSlider">Perbesar Foto</label>
+                            <div class="slider-container">
+                                <input type="range" min="50" max="150" value="100" class="slider" id="sizeSlider">
+                                <span class="slider-value" id="sizeValue">100%</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="rotateSlider">Putar Foto</label>
+                            <div class="slider-container">
+                                <input type="range" min="-45" max="45" value="0" class="slider" id="rotateSlider">
+                                <span class="slider-value" id="rotateValue">0°</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="action-btn download-btn" id="downloadBtn">
+                                <i class="fas fa-download"></i> Unduh Twibbon
+                            </button>
+                            <button class="action-btn reset-btn" id="resetBtn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kontak">
+                <button>
+                    <a href="https://wa.me/6289531657198" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Hubungi Jika Ada Kendala
+                    </a>
+                </button>
+            </div>
+
+            <footer>
+                <div class="footer-content">
+                    <h2 class="footer-title">Twibbon Generator MATSAMA</h2>
+
+                    <div class="footer-info">
+                        <div class="footer-section">
+                            <h3><i class="fas fa-info-circle"></i> Tentang Kami</h3>
+                            <p>Twibbon Generator MATSAMA menyediakan platform untuk membuat twibbon kustom dengan mudah
+                                dan cepat tanpa Watermark. Nikmati pengalaman free dalam membuat twibbon Anda.</p>
+                        </div>
+
+                        <div class="footer-section">
+                            <h3><i class="fas fa-link"></i> Tautan</h3>
+                            <ul>
+                                <li><a href="https://www.instagram.com/elc_learning_care/"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                                <li><a href="https://github.com/abdussalam090207"><i class="fa-brands fa-github"></i> Github</a></li>
+                                <li><a href="https://www.youtube.com/@elccakungjakarta1297"><i class="fa-brands fa-youtube"></i> Youtube</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="footer-section">
+                            <h3><i class="fas fa-envelope"></i> Kontak</h3>
+                            <ul>
+                                <li><a href="mailto:belajar.alam2007@gmail.com"><i class="fas fa-envelope"></i>
+                                        Email</a></li>
+                                <li><a href="https://wa.me/6289531657198" target="_blank"><i
+                                            class="fab fa-whatsapp"></i> WhatsApp</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="copyright">
+                        <p>&copy; 2025 <a href="#">Twibbon Generator MATSAMA</a> | Dibuat oleh Abdus Salam</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+    <script>
+        // === LOADING SCREEN FUNCTIONALITY ===
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create stars for loading screen
+            createStars('stars-container', 150);
+
+            // Show loading screen for 3 seconds
+            setTimeout(function () {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(function () {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.querySelector('.main-content').style.display = 'block';
+                    // Create stars for main content background with movement
+                    createStars('stars-bg-container', 100);
+                }, 500);
+            }, 3000);
+
+            // Star creation function
+            function createStars(containerId, count) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+
+                for (let i = 0; i < count; i++) {
+                    const star = document.createElement('div');
+
+                    if (containerId === 'stars-container') {
+                        star.classList.add('star');
+                    } else {
+                        star.classList.add('star-bg');
+                    }
+
+                    // Random size
+                    const size = Math.random() * 3;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+
+                    // Random position
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+
+                    // Random animation duration for twinkle
+                    const duration = 2 + Math.random() * 5;
+                    star.style.setProperty('--duration', `${duration}s`);
+
+                    // For background stars only - add movement animation
+                    if (containerId === 'stars-bg-container') {
+                        // Random movement duration (20-80 seconds)
+                        const moveDuration = 20 + Math.random() * 60;
+                        star.style.setProperty('--move-duration', `${moveDuration}s`);
+
+                        // Random delay for movement animation (0-20 seconds)
+                        const delay = Math.random() * 20;
+                        star.style.animationDelay = `-${delay}s`;
+                    }
+
+                    container.appendChild(star);
+                }
+            }
+
+            // === TWIBBON FUNCTIONALITY ===
+            // Elements
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const userImage = document.getElementById('userImage');
+            const twibbonFrame = document.getElementById('twibbonFrame');
+            const sizeSlider = document.getElementById('sizeSlider');
+            const sizeValue = document.getElementById('sizeValue');
+            const rotateSlider = document.getElementById('rotateSlider');
+            const rotateValue = document.getElementById('rotateValue');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const frameOptions = document.querySelectorAll('.frame-option');
+
+            // Variables
+            let scale = 1;
+            let rotation = 0;
+            let isDragging = false;
+            let startX, startY;
+            let offsetX = 0, offsetY = 0;
+            let currentOffsetX = 0, currentOffsetY = 0;
+
+            // Event Listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileUpload);
+
+            sizeSlider.addEventListener('input', () => {
+                scale = sizeSlider.value / 100;
+                sizeValue.textContent = sizeSlider.value + '%';
+                updateImageTransform();
+            });
+
+            rotateSlider.addEventListener('input', () => {
+                rotation = rotateSlider.value;
+                rotateValue.textContent = rotation + '°';
+                updateImageTransform();
+            });
+
+            downloadBtn.addEventListener('click', downloadTwibbon);
+            resetBtn.addEventListener('click', resetControls);
+
+            // Drag functionality
+            userImage.addEventListener('mousedown', startDrag);
+            userImage.addEventListener('touchstart', startDragTouch);
+
+            // Frame selection
+            frameOptions.forEach(frame => {
+                frame.addEventListener('click', () => {
+                    frameOptions.forEach(f => f.classList.remove('active'));
+                    frame.classList.add('active');
+                    twibbonFrame.src = frame.querySelector('img').src;
+                });
+            });
+
+            // Functions
+            function handleFileUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.match('image.*')) {
+                    alert('Silakan unggah file gambar (JPG, PNG)');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 5MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    userImage.src = event.target.result;
+                    userImage.style.display = 'block';
+
+                    // --- RESET CONTROLS ---
+                    rotation = 0;
+                    offsetX = offsetY = currentOffsetX = currentOffsetY = 0;
+
+                    // Dapatkan ukuran natural foto
+                    const tempImg = new Image();
+                    tempImg.src = event.target.result;
+                    tempImg.onload = () => {
+                        // Ukuran preview frame (px di layar)
+                        const frameRect = twibbonFrame.getBoundingClientRect();
+                        const frameW = frameRect.width;
+                        const frameH = frameRect.height;
+
+                        // Hitung scale awal untuk "cover"
+                        scale = computeCoverScale(
+                            tempImg.naturalWidth,
+                            tempImg.naturalHeight,
+                            frameW,
+                            frameH
+                        );
+                        sizeSlider.value = Math.round(scale * 100);
+                        sizeValue.textContent = sizeSlider.value + '%';
+
+                        // Centering: offsetX/Y supaya image di-center di frame
+                        // Karena gambar akan digambar dengan center pivot
+                        offsetX = offsetY = 0;
+
+                        updateImageTransform();
+                    };
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            function computeCoverScale(imgW, imgH, frameW, frameH) {
+                const ratioW = frameW / imgW;
+                const ratioH = frameH / imgH;
+                return Math.max(ratioW, ratioH);
+            }
+
+            function updateImageTransform() {
+                userImage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale}) rotate(${rotation}deg)`;
+            }
+
+            function startDrag(e) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.clientX - offsetX;
+                startY = e.clientY - offsetY;
+
+                document.addEventListener('mousemove', dragImage);
+                document.addEventListener('mouseup', stopDrag);
+            }
+
+            function startDragTouch(e) {
+                e.preventDefault();
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX - offsetX;
+                startY = touch.clientY - offsetY;
+
+                document.addEventListener('touchmove', dragImageTouch);
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function dragImage(e) {
+                if (!isDragging) return;
+                offsetX = e.clientX - startX;
+                offsetY = e.clientY - startY;
+                updateImageTransform();
+            }
+
+            function dragImageTouch(e) {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                offsetX = touch.clientX - startX;
+                offsetY = touch.clientY - startY;
+                updateImageTransform();
+            }
+
+            function stopDrag() {
+                isDragging = false;
+                document.removeEventListener('mousemove', dragImage);
+                document.removeEventListener('touchmove', dragImageTouch);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+
+                // Save current position
+                currentOffsetX = offsetX;
+                currentOffsetY = offsetY;
+            }
+
+            // Fungsi untuk bypass masalah CORS GitHub
+            function loadImageWithoutCORS(url, callback) {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = url + "?ts=" + new Date().getTime(); // Hindari cache
+                img.onload = () => callback(img);
+                img.onerror = () => {
+                    console.error("Gagal memuat template. Silakan coba lagi atau gunakan hosting lain.");
+                    alert("Error: Template tidak bisa dimuat. Coba refresh halaman atau gunakan hosting alternatif.");
+                };
+            }
+
+            const frameUrl = "https://raw.githubusercontent.com/abdussalam090207/Twibbonmts38/refs/heads/main/Oranye%20dan%20Kuning%20Abstrak%20Modern%20Twibbon%20PKKMB%20Konten%20Instagram%20(2).png";
+
+            // Fungsi download yang diperbaiki
+            function downloadTwibbon() {
+                const userImg = document.getElementById('userImage');
+                if (!userImg.src) {
+                    return alert('Silakan unggah foto terlebih dahulu!');
+                }
+
+                const frameUrl = document.getElementById('twibbonFrame').src;
+                loadImageWithoutCORS(frameUrl, fixedFrame => {
+                    // 1) Setup canvas
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = fixedFrame.naturalWidth;
+                    canvas.height = fixedFrame.naturalHeight;
+
+                    // 2) Hitung faktor mapping preview→canvas
+                    const frameRect = twibbonFrame.getBoundingClientRect();
+                    const imgRect = userImg.getBoundingClientRect();
+                    const scaleCanvas = canvas.width / frameRect.width;
+
+                    // 3) Hitung offset pusat gambar di preview (relatif ke pusat frame)
+                    const frameCX = frameRect.left + frameRect.width / 2;
+                    const frameCY = frameRect.top + frameRect.height / 2;
+                    const imgCX = imgRect.left + imgRect.width / 2;
+                    const imgCY = imgRect.top + imgRect.height / 2;
+                    const dxPreview = imgCX - frameCX;
+                    const dyPreview = imgCY - frameCY;
+
+                    // 4) Konversi ke canvas‑space
+                    const dxCanvas = dxPreview * scaleCanvas;
+                    const dyCanvas = dyPreview * scaleCanvas;
+                    const imgW = imgRect.width * scaleCanvas;
+                    const imgH = imgRect.height * scaleCanvas;
+
+                    // 5) Draw user image dengan rotasi & posisi sama persis
+                    ctx.save();
+                    ctx.translate(canvas.width / 2 + dxCanvas, canvas.height / 2 + dyCanvas);
+                    ctx.rotate(rotation * Math.PI / 180);
+                    ctx.drawImage(userImg, -imgW / 2, -imgH / 2, imgW, imgH);
+                    ctx.restore();
+
+                    // 6) Draw frame di atasnya
+                    ctx.drawImage(fixedFrame, 0, 0, canvas.width, canvas.height);
+
+                    // 7) Trigger download
+                    const link = document.createElement('a');
+                    link.download = 'twibbon-kustom.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }
+
+            function resetControls() {
+                scale = 1;
+                rotation = 0;
+                offsetX = 0;
+                offsetY = 0;
+                currentOffsetX = 0;
+                currentOffsetY = 0;
+
+                sizeSlider.value = 100;
+                sizeValue.textContent = '100%';
+                rotateSlider.value = 0;
+                rotateValue.textContent = '0°';
+
+                updateImageTransform();
+            }
+        });
+    </script>
+</body>
+
+</html>
